@@ -14,11 +14,11 @@ O projeto foi desenvolvido empregando o padrão TDD(Test Driven Development) .
 
 # Modelo Conceitual
 
-![Modelo](https://github.com/galetedanilo/events/blob/master/assets/modelo.png)
+![Modelo](https://github.com/galetedanilo/employees/blob/master/assets/modelo.png)
 
 # Padrão Camada
 
-![Padrao](https://github.com/galetedanilo/events/blob/master/assets/camadas.png)
+![Padrao](https://github.com/galetedanilo/employees/blob/master/assets/camadas.png)
 
 # Tecnologias Utilizadas
 
