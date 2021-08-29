@@ -2,9 +2,9 @@ package com.devsuperior.employees.controllers;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,21 +18,24 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.devsuperior.employees.dto.DepartmentDTO;
+import com.devsuperior.employees.responses.DepartmentResponse;
 import com.devsuperior.employees.services.DepartmentService;
 
+import lombok.AllArgsConstructor;
+
 @RestController
-@RequestMapping(value = "/departments")
+@RequestMapping(value = "/app/v1/departments")
+@AllArgsConstructor
 public class DepartmentController {
 	
-	@Autowired
-	private DepartmentService service;
+	private final DepartmentService service;
 	
 	@GetMapping
-	public ResponseEntity<Page<DepartmentDTO>> findAll(Pageable pageable) {
+	public ResponseEntity<Page<DepartmentResponse>> findAllDepartments(Pageable pageable) {
 		
-		Page<DepartmentDTO> page = service.findAll(pageable);
+		Page<DepartmentResponse> response = service.findAllDepartments(pageable);
 		
-		return ResponseEntity.ok().body(page);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/{id}")

@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -14,16 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.employees.dto.DepartmentDTO;
 import com.devsuperior.employees.entities.Department;
+import com.devsuperior.employees.mappers.DepartmentMapper;
 import com.devsuperior.employees.repositories.DepartmentRepository;
+import com.devsuperior.employees.responses.DepartmentResponse;
 import com.devsuperior.employees.services.exceptions.DatabaseException;
 import com.devsuperior.employees.services.exceptions.ResourceNotFoundException;
 
+import lombok.AllArgsConstructor;
+
 
 @Service
+@AllArgsConstructor
 public class DepartmentService {
 
-	@Autowired
-	private DepartmentRepository repository;
+	
+	private final DepartmentRepository repository;
+	
+	private final DepartmentMapper mapper = DepartmentMapper.INSTANCE;
 	
 	private void copyDtoToEntity(DepartmentDTO dto, Department entity) {
 		
@@ -31,11 +37,11 @@ public class DepartmentService {
 	}
 	
 	@Transactional(readOnly = true)
-	public Page<DepartmentDTO> findAll(Pageable pageable) {
+	public Page<DepartmentResponse> findAllDepartments(Pageable pageable) {
 		
 		Page<Department> page = repository.findAll(pageable);
 		
-		return page.map(entity -> new DepartmentDTO(entity));
+		return page.map(entity -> mapper.departmentToDepartmentResponse(entity));
 	}
 	
 	@Transactional(readOnly = true)
