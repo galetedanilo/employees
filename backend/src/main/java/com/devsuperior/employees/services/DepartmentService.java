@@ -2,8 +2,6 @@ package com.devsuperior.employees.services;
 
 import java.util.Optional;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -11,10 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.devsuperior.employees.dto.DepartmentDTO;
 import com.devsuperior.employees.entities.Department;
 import com.devsuperior.employees.mappers.DepartmentMapper;
 import com.devsuperior.employees.repositories.DepartmentRepository;
+import com.devsuperior.employees.requests.DepartmentRequest;
 import com.devsuperior.employees.responses.DepartmentResponse;
 import com.devsuperior.employees.services.exceptions.DatabaseException;
 import com.devsuperior.employees.services.exceptions.ResourceNotFoundException;
@@ -27,70 +25,65 @@ import lombok.AllArgsConstructor;
 public class DepartmentService {
 
 	
-	private final DepartmentRepository repository;
+	private final DepartmentRepository departmentRepository;
 	
-	private final DepartmentMapper mapper = DepartmentMapper.INSTANCE;
-	
-	private void copyDtoToEntity(DepartmentDTO dto, Department entity) {
-		
-		entity.setName(dto.getName());
-	}
+	private final DepartmentMapper departmentMapper = DepartmentMapper.INSTANCE;
 	
 	@Transactional(readOnly = true)
 	public Page<DepartmentResponse> findAllDepartments(Pageable pageable) {
 		
-		Page<Department> page = repository.findAll(pageable);
+		Page<Department> page = departmentRepository.findAll(pageable);
 		
-		return page.map(entity -> mapper.departmentToDepartmentResponse(entity));
+		return page.map(departmentEntity -> departmentMapper.departmentToDepartmentResponse(departmentEntity));
 	}
 	
 	@Transactional(readOnly = true)
-	public DepartmentDTO findById(Long id) {
+	public DepartmentResponse findDepartmentById(Long id) {
 		
-		Optional<Department> optional = repository.findById(id);
+		Optional<Department> optional = departmentRepository.findById(id);
 		
-		Department entity = optional.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+		Department departmentEntity = optional.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
 		
-		return new DepartmentDTO(entity);
+		return departmentMapper.departmentToDepartmentResponse(departmentEntity);
 	}
 	
 	@Transactional
-	public DepartmentDTO insert(DepartmentDTO dto) {
+	public DepartmentResponse addNewDepartment(DepartmentRequest departmentRequest) {
 		
-		Department entity = new Department();
+		Department departmentEntity = departmentMapper.departmentRequestToDepartment(departmentRequest);
 		
-		copyDtoToEntity(dto, entity);
+		departmentEntity = departmentRepository.save(departmentEntity);
 		
-		entity = repository.save(entity);
-		
-		return new DepartmentDTO(entity);
+		return departmentMapper.departmentToDepartmentResponse(departmentEntity);
 	}
 	
 	@Transactional
-	public DepartmentDTO update(Long id, DepartmentDTO dto) {
+	public DepartmentResponse updateDepartment(Long id, DepartmentRequest departmentRequest) {
 		
-		try {
-			Department entity = repository.getById(id);
-			
-			copyDtoToEntity(dto, entity);
+		verifyIfDepartmentExists(id);
+		
+		Department departmentEntity = departmentMapper.departmentRequestToDepartment(departmentRequest);
+		
+		departmentEntity.setId(id);
+		
+		departmentEntity = departmentRepository.save(departmentEntity);
+		
+		return departmentMapper.departmentToDepartmentResponse(departmentEntity);
+	}
 
-			entity = repository.save(entity);
-			
-			return new DepartmentDTO(entity);
-			
-		} catch(EntityNotFoundException ex) {
-			throw new ResourceNotFoundException("Entity not found " + id);
-		}
-	}
-	
 	public void delete(Long id) {
 		
 		try {
-			repository.deleteById(id);
+			departmentRepository.deleteById(id);
 		} catch(EmptyResultDataAccessException ex) {
 			throw new ResourceNotFoundException("Entity not found " + id);
 		} catch(DataIntegrityViolationException ex) {
 			throw new DatabaseException("Integrity violation");
 		}
+	}
+	
+	private void verifyIfDepartmentExists(Long id) {
+		departmentRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Department " + id + " not found"));
 	}
 }
