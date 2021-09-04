@@ -1,9 +1,9 @@
 package com.devsuperior.employees.controllers;
 
-import java.net.URI;
-
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.devsuperior.employees.dto.DepartmentDTO;
+import com.devsuperior.employees.requests.DepartmentRequest;
 import com.devsuperior.employees.responses.DepartmentResponse;
 import com.devsuperior.employees.services.DepartmentService;
 
@@ -35,42 +34,70 @@ public class DepartmentController {
 		
 		Page<DepartmentResponse> response = service.findAllDepartments(pageable);
 		
+		response.forEach(x -> {
+			x.add(WebMvcLinkBuilder
+					.linkTo(WebMvcLinkBuilder.methodOn(DepartmentController.class).findDepartmentById(x.getDepartmentId()))
+					.withSelfRel());
+			
+			x.add(WebMvcLinkBuilder
+					.linkTo(WebMvcLinkBuilder.methodOn(DepartmentController.class).deleteDepartment(x.getDepartmentId()))
+					.withRel("Delete Department"));
+		});
+		
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<DepartmentDTO>  findById(@PathVariable Long id) {
+	public ResponseEntity<DepartmentResponse>  findDepartmentById(@PathVariable Long id) {
 		
-		DepartmentDTO dto = service.findById(id);
+		DepartmentResponse response = service.findDepartmentById(id);
 		
-		return ResponseEntity.ok().body(dto);
+		response.add(WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder.methodOn(DepartmentController.class).findAllDepartments(PageRequest.of(0, 20)))
+				.withRel("Find All Departments"));
+		
+		response.add(WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder.methodOn(DepartmentController.class).deleteDepartment(response.getDepartmentId()))
+				.withRel("Delete Department"));
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@PostMapping
-	public ResponseEntity<DepartmentDTO> insert(@Validated @RequestBody DepartmentDTO dto) {
+	public ResponseEntity<DepartmentResponse> addNewDepartment(@Validated @RequestBody DepartmentRequest request) {
 		
-		dto = service.insert(dto);
+		DepartmentResponse response = service.addNewDepartment(request);
 		
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-					.buildAndExpand(dto.getId()).toUri();
+		response.add(WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder.methodOn(DepartmentController.class).findAllDepartments(PageRequest.of(0, 20)))
+				.withRel("Find All Departments"));
 		
-		return ResponseEntity.created(uri).body(dto);
+		response.add(WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder.methodOn(DepartmentController.class).deleteDepartment(response.getDepartmentId()))
+				.withRel("Delete Department"));
+		
+		//URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+		//			.buildAndExpand(response.getId()).toUri();
+		
+		//return ResponseEntity.created(uri).body(dto);
+		
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<DepartmentDTO> update(@PathVariable Long id, @Validated @RequestBody DepartmentDTO dto) {
+	public ResponseEntity<DepartmentResponse> update(@PathVariable Long id, @Validated @RequestBody DepartmentRequest request) {
 		
-		dto = service.update(id, dto);
+		DepartmentResponse response = service.updateDepartment(id, request);
 		
-		return ResponseEntity.ok().body(dto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
+	public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
 		
-		service.delete(id);
+		service.deleteDepartment(id);
 		
-		return ResponseEntity.noContent().build();
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 }

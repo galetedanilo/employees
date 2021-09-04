@@ -71,7 +71,7 @@ public class DepartmentService {
 		return departmentMapper.departmentToDepartmentResponse(departmentEntity);
 	}
 
-	public void delete(Long id) {
+	public void deleteDepartment(Long id) {
 		
 		try {
 			departmentRepository.deleteById(id);
