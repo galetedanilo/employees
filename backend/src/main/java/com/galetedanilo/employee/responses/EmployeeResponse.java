@@ -1,6 +1,5 @@
 package com.galetedanilo.employee.responses;
 
-import com.galetedanilo.employee.controllers.DepartmentController;
 import com.galetedanilo.employee.controllers.EmployeeController;
 import com.galetedanilo.employee.entities.Employee;
 import lombok.*;
@@ -22,7 +21,7 @@ public class EmployeeResponse extends RepresentationModel<EmployeeResponse> impl
     private Long id;
     private String firstName;
     private String lastName;
-    private String genre;
+    private String gender;
     private String imageUri;
     private String email;
     private DepartmentResponse departmentResponse;
@@ -31,7 +30,7 @@ public class EmployeeResponse extends RepresentationModel<EmployeeResponse> impl
         this.id = employee.getId();
         this.firstName = employee.getFirstName();
         this.lastName = employee.getLastName();
-        this.genre = employee.getGenre().name();
+        this.gender = employee.getGender().name();
         this.imageUri = employee.getImageUri();
         this.email = employee.getEmail();
         this.departmentResponse = new DepartmentResponse(employee.getDepartment());

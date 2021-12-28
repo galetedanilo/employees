@@ -12,11 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.Serializable;
 
 @RestController
 @RequestMapping(value = "/api/v1/employees")
 @AllArgsConstructor
-public class EmployeeController {
+public class EmployeeController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final EmployeeService employeeService;
 

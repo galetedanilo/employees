@@ -2,7 +2,7 @@ package com.galetedanilo.employee.services;
 
 import com.galetedanilo.employee.entities.Department;
 import com.galetedanilo.employee.entities.Employee;
-import com.galetedanilo.employee.entities.enums.Genre;
+import com.galetedanilo.employee.entities.enums.Gender;
 import com.galetedanilo.employee.repositories.DepartmentRepository;
 import com.galetedanilo.employee.repositories.EmployeeRepository;
 import com.galetedanilo.employee.requests.EmployeeRequest;
@@ -108,7 +108,7 @@ public class EmployeeService implements Serializable {
 
             employee.setFirstName(employeeRequest.getFirstName());
             employee.setLastName(employeeRequest.getLastName());
-            employee.setGenre(Genre.valueOf(employeeRequest.getGenre()));
+            employee.setGender(Gender.valueOf(employeeRequest.getGender()));
             employee.setCpf(employeeRequest.getCpf());
             employee.setBirthDate(employeeRequest.getBirthDate());
             employee.setUsername(employeeRequest.getUsername());

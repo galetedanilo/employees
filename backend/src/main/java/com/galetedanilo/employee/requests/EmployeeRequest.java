@@ -23,8 +23,8 @@ public class EmployeeRequest implements Serializable {
     private String firstName;
     @NotBlank(message = "Employee last name is required")
     private String lastName;
-    @NotBlank(message = "Employee genre is required")
-    private String genre;
+    @NotBlank(message = "Employee gender is required")
+    private String gender;
     @CPF(message = "CPF is not valid")
     private String cpf;
     @Past(message = "Employee birth date is not valid")

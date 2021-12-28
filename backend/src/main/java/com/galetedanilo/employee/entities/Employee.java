@@ -1,6 +1,6 @@
 package com.galetedanilo.employee.entities;
 
-import com.galetedanilo.employee.entities.enums.Genre;
+import com.galetedanilo.employee.entities.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +34,7 @@ public class Employee {
     @Column(nullable = false)
     private String lastName;
     @Enumerated(EnumType.STRING)
-    private Genre genre;
+    private Gender gender;
     @Column(nullable = false, unique = true)
     private String cpf;
     @Column(nullable = true)
