@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
@@ -15,7 +16,9 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "tb_departments")
-public class Department {
+public class Department implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @SequenceGenerator(

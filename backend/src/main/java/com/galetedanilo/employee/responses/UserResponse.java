@@ -11,6 +11,7 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @Data
 @Builder
@@ -22,10 +23,13 @@ public class UserResponse extends RepresentationModel<UserResponse> implements S
 
     private Long id;
     private String email;
+    private Set<RoleResponse> roleResponses;
 
     public UserResponse(User user) {
         this.id = user.getId();
-        this.email = user.getEmail();
+        this.email = user.getUsername();
+
+        user.getRoleSet().forEach(role -> this.roleResponses.add(new RoleResponse(role)));
 
         this.add(WebMvcLinkBuilder
                 .linkTo(WebMvcLinkBuilder.methodOn(UserController.class).findUserByPrimaryKey(id))
